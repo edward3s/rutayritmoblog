@@ -25,24 +25,6 @@ npm run covers   # regenera las portadas vectoriales por artículo
 7. **Boletín**: usa Netlify Forms por defecto. En otro hosting, cambia el `action` de `src/components/Newsletter.astro` por tu proveedor (Buttondown, Mailchimp, ConvertKit…).
 8. **Imagen social**: `public/og-default.png` se puede regenerar desde `public/og-default.svg`.
 
-## AdSense: qué está listo y qué falta
-
-El sitio incluye:
-
-- Huecos publicitarios reservados y etiquetados (`AdSlot.astro`) solo en home, archivo, artículos y rutas.
-- Banner de consentimiento (`CookieBanner.astro`) que guarda la elección y no carga anuncios si se rechazan.
-- `ads.txt` de ejemplo (comentado).
-- Privacidad, cookies, aviso legal, política editorial y divulgación de afiliados.
-- Navegación, búsqueda, RSS, sitemap y redirecciones.
-
-Para activar AdSense:
-
-1. Solicita la cuenta con el dominio final y espera la aprobación. No publiques huecos vacíos como si fueran anuncios reales.
-2. Define `PUBLIC_ADSENSE_CLIENT` (formato `ca-pub-XXXXXXXXXXXXXXXX`) y `PUBLIC_ADSENSE_SLOT` en el hosting. Sin ellas, los huecos quedan como reservas visuales.
-3. Sustituye el contenido de `public/ads.txt` por la línea que te dé Google.
-4. Para tráfico del EEE/Reino Unido, configura una **CMP certificada por Google** (Funding Choices u otra homologada). El banner propio no sustituye a esa CMP.
-5. Revisa las políticas de contenido de AdSense y no publiques artículos médicos sin revisión profesional.
-6. Comprueba el consentimiento antes de cargar el script: el componente solo lo inyecta tras aceptar.
 
 ## Contenido
 
