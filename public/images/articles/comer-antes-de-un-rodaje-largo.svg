@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Comida previa — Ruta y Ritmo</title>
+  <desc id="desc">Ilustración editorial vectorial sobre comida previa en el running.</desc>
+  <rect width="1200" height="675" fill="#E8EDF0"/>
+  <path d="M0 0h1200v105H0z" fill="#D7E0E5"/>
+  <path d="M0 105h1200" stroke="#0E1A20" stroke-opacity=".22" stroke-width="2"/>
+  <text x="88" y="69" fill="#0E1A20" font-family="Arial, sans-serif" font-size="30" font-weight="700" letter-spacing="3">RUTA Y RITMO</text>
+  <text x="1112" y="68" text-anchor="end" fill="#123F52" font-family="Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="2">NUTRICIÓN</text>
+  <path d="M0 565c160-20 248-45 376-27 142 20 213 57 360 46 159-12 276-53 464-34v125H0Z" fill="#D7E0E5"/>
+  <path d="M0 602c223-35 367 19 548 3 204-18 344-62 652-28" fill="none" stroke="#1C6275" stroke-opacity=".3" stroke-width="3"/>
+  <g><circle cx="850" cy="350" r="185" fill="#E8EDF0" stroke="#0E1A20" stroke-width="14"/><circle cx="850" cy="350" r="148" fill="none" stroke="#1C6275" stroke-width="8"/><path d="M805 285c40-55 106-24 112 20 8 55-69 95-110 35-14-21-13-37-2-55Z" fill="#F05A28"/><path d="M893 406c-28 25-75 35-110 14" fill="none" stroke="#123F52" stroke-width="14" stroke-linecap="round"/><path d="M640 175v340M610 205h60M610 485h60" stroke="#0E1A20" stroke-width="10" stroke-linecap="round"/></g>
+  <path d="M88 620h104" stroke="#F05A28" stroke-width="10" stroke-linecap="square"/>
+  <text x="214" y="630" fill="#51656D" font-family="Arial, sans-serif" font-size="19" letter-spacing="1">COMIDA PREVIA</text>
+</svg>

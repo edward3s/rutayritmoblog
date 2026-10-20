@@ -1,0 +1,10 @@
+# Redirecciones 301 para Netlify.
+# Si cambias un slug, añade aquí la URL antigua y la nueva.
+
+/blog/*            /diario/:splat                        301
+/posts/*           /diario/:splat                        301
+/articulos/*       /diario/:splat                        301
+/entrenamiento/*   /diario/:splat                         301
+/rss               /rss.xml                              301
+/feed              /rss.xml                              301
+/index.html        /                                     301

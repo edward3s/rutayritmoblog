@@ -1,0 +1,218 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import RouteProfile from '../../components/RouteProfile.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import Newsletter from '../../components/Newsletter.astro';
+import { AUTOR } from '../../data/autor';
+import { SITE } from '../../data/site';
+import { formatDate } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const rutas = await getCollection('rutas');
+  return rutas.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props as { entry: CollectionEntry<'rutas'> };
+const { Content, headings } = await render(entry);
+const site = Astro.site ?? new URL(SITE.url);
+const url = `/rutas/${entry.id}/`;
+const canonical = new URL(url, site).toString();
+const updated = entry.data.updatedAt ?? entry.data.publishedAt;
+const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: entry.data.title,
+    description: entry.data.description,
+    datePublished: entry.data.publishedAt.toISOString(),
+    dateModified: updated.toISOString(),
+    author: {
+      '@type': 'Person',
+      name: AUTOR.name,
+      url: new URL(`/autor/${AUTOR.slug}/`, site).toString(),
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: SITE.name,
+      url: site.toString(),
+    },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+    image: [new URL('/og-default.png', site).toString()],
+    articleSection: 'Rutas',
+    about: {
+      '@type': 'Place',
+      name: entry.data.start,
+    },
+    inLanguage: 'es-ES',
+    isAccessibleForFree: true,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Inicio', item: site.toString() },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Rutas',
+        item: new URL('/rutas/', site).toString(),
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: entry.data.title,
+        item: canonical,
+      },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title={`${entry.data.title} — Ruta`}
+  description={entry.data.description}
+  type="article"
+  publishedTime={entry.data.publishedAt.toISOString()}
+  modifiedTime={updated.toISOString()}
+  section="Rutas"
+  jsonLd={jsonLd}
+>
+  <div class="wrap">
+    <Breadcrumbs
+      items={[
+        { label: 'Inicio', href: '/' },
+        { label: 'Rutas', href: '/rutas/' },
+        { label: entry.data.title },
+      ]}
+    />
+
+    <header class="article-header">
+      <div class="article-kicker">
+        <span class="category-tag" style="--cat: var(--primary)">Ruta</span>
+        <span>{entry.data.distanceKm} km</span>
+        <span>{entry.data.difficulty}</span>
+      </div>
+      <h1 class="article-title">{entry.data.title}</h1>
+      <p class="article-dek">{entry.data.description}</p>
+      <div class="article-byline">
+        <span>Ficha de <a href={`/autor/${AUTOR.slug}/`}>{AUTOR.name}</a></span>
+        <time datetime={entry.data.publishedAt.toISOString()}>
+          {formatDate(entry.data.publishedAt, 'long')}
+        </time>
+        {entry.data.updatedAt && (
+          <span>Actualizada el {formatDate(entry.data.updatedAt, 'long')}</span>
+        )}
+      </div>
+    </header>
+
+    <dl class="route-facts">
+      <div class="route-fact">
+        <dt>Distancia</dt>
+        <dd>{entry.data.distanceKm} km</dd>
+      </div>
+      <div class="route-fact">
+        <dt>Desnivel positivo</dt>
+        <dd>+{entry.data.elevationGain} m</dd>
+      </div>
+      <div class="route-fact">
+        <dt>Duración estimada</dt>
+        <dd>{entry.data.duration}</dd>
+      </div>
+      <div class="route-fact">
+        <dt>Terreno</dt>
+        <dd>{entry.data.terrain}</dd>
+      </div>
+      <div class="route-fact">
+        <dt>Dificultad</dt>
+        <dd>{entry.data.difficulty}</dd>
+      </div>
+      <div class="route-fact">
+        <dt>Salida</dt>
+        <dd>{entry.data.start}</dd>
+      </div>
+    </dl>
+
+    <div class="route-profile">
+      <RouteProfile profile={entry.data.profile} />
+      <div class="route-profile__labels">
+        <span>0 km</span>
+        <span>{Math.round(entry.data.distanceKm / 2)} km</span>
+        <span>{entry.data.distanceKm} km</span>
+      </div>
+    </div>
+
+    <aside class="draft-note">
+      <strong>Ficha preliminar:</strong> el recorrido, el perfil, los accesos y los puntos
+      de agua requieren verificación local. No uses esta ficha como única fuente para
+      planificar una salida.
+    </aside>
+
+    <AdSlot />
+
+    <div class="article-layout">
+      <aside class="article-aside">
+        {toc.length > 1 && (
+          <nav class="toc" aria-label="En esta ruta">
+            <p class="toc__title">En esta ficha</p>
+            <ol>
+              {toc.map((heading) => (
+                <li data-depth={heading.depth}>
+                  <a href={`#${heading.slug}`}>{heading.text}</a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )}
+
+        <div class="author-mini">
+          <span class="avatar" aria-hidden="true">{AUTOR.name.slice(0, 1)}</span>
+          <div>
+            <p class="author-mini__name"><a href={`/autor/${AUTOR.slug}/`}>{AUTOR.name}</a></p>
+            <p class="author-mini__role">Ficha revisada antes de publicar</p>
+          </div>
+        </div>
+      </aside>
+
+      <div class="article-body">
+        <div class="prose">
+          <p class="lead"><strong>Agua:</strong> {entry.data.water}</p>
+          <Content />
+        </div>
+
+        {entry.data.sources.length > 0 && (
+          <section class="sources" aria-labelledby="fuentes-title">
+            <h2 id="fuentes-title">Fuentes y mapas</h2>
+            <ul>
+              {entry.data.sources.map((source) => (
+                <li>
+                  <a href={source.url} target="_blank" rel="noopener noreferrer">
+                    {source.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <aside class="medical-note">
+          <strong>Antes de salir:</strong> revisa la previsión meteorológica, lleva agua
+          suficiente y avisa a alguien de tu ruta. En zonas sin cobertura, descarga el mapa
+          sin conexión. Si vas solo, el plan más conservador es el correcto.
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <Newsletter
+    title="Una ruta nueva cada dos domingos."
+    description="Rutas, entrenamientos y material. Sin planes milagro ni códigos de descuento."
+  />
+</BaseLayout>

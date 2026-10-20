@@ -1,0 +1,233 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import AdSlot from '../components/AdSlot.astro';
+import Newsletter from '../components/Newsletter.astro';
+import { CATEGORIAS } from '../data/categorias';
+import { AUTOR } from '../data/autor';
+import { SITE } from '../data/site';
+import { formatDate, readingTime } from '../lib/utils';
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  entry: CollectionEntry<'articulos'>;
+  headings: Heading[];
+  related: CollectionEntry<'articulos'>[];
+}
+
+const { entry, headings, related } = Astro.props;
+const categoria = CATEGORIAS[entry.data.category];
+const url = `/diario/${entry.id}/`;
+const minutes = readingTime(entry.body);
+const updated = entry.data.updatedAt ?? entry.data.publishedAt;
+
+const site = Astro.site ?? new URL(SITE.url);
+const canonical = new URL(url, site).toString();
+const image = new URL('/og-default.png', site).toString();
+
+const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+
+const blogPosting = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: entry.data.title,
+  description: entry.data.description,
+  datePublished: entry.data.publishedAt.toISOString(),
+  dateModified: updated.toISOString(),
+  author: {
+    '@type': 'Person',
+    name: AUTOR.name,
+    url: new URL(`/autor/${AUTOR.slug}/`, site).toString(),
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: SITE.name,
+    url: site.toString(),
+  },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': canonical,
+  },
+  image: [image],
+  articleSection: categoria.name,
+  inLanguage: 'es-ES',
+  isAccessibleForFree: true,
+};
+
+const breadcrumbs = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Inicio',
+      item: site.toString(),
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Diario',
+      item: new URL('/diario/', site).toString(),
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: categoria.name,
+      item: new URL(`/diario/categoria/${categoria.slug}/`, site).toString(),
+    },
+    {
+      '@type': 'ListItem',
+      position: 4,
+      name: entry.data.title,
+      item: canonical,
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  type="article"
+  publishedTime={entry.data.publishedAt.toISOString()}
+  modifiedTime={updated.toISOString()}
+  section={categoria.name}
+  jsonLd={[blogPosting, breadcrumbs]}
+>
+  <div class="wrap">
+    <Breadcrumbs
+      items={[
+        { label: 'Inicio', href: '/' },
+        { label: 'Diario', href: '/diario/' },
+        { label: categoria.name, href: `/diario/categoria/${categoria.slug}/` },
+        { label: entry.data.title },
+      ]}
+    />
+
+    <header class="article-header">
+      <div class="article-kicker">
+        <a
+          class="category-tag"
+          href={`/diario/categoria/${categoria.slug}/`}
+          style={`--cat:${categoria.tone}`}
+        >{categoria.name}</a>
+        <span>{minutes} min de lectura</span>
+      </div>
+
+      <h1 class="article-title">{entry.data.title}</h1>
+      <p class="article-dek">{entry.data.description}</p>
+
+      <div class="article-byline">
+        <span>Por <a href={`/autor/${AUTOR.slug}/`}>{AUTOR.name}</a></span>
+        <time datetime={entry.data.publishedAt.toISOString()}>
+          {formatDate(entry.data.publishedAt, 'long')}
+        </time>
+        {entry.data.updatedAt && (
+          <span>Actualizado el {formatDate(entry.data.updatedAt, 'long')}</span>
+        )}
+      </div>
+    </header>
+
+    <div class="article-art" aria-hidden="true">
+      <img
+        src={`/images/articles/${entry.id}.svg`}
+        width="1200"
+        height="675"
+        fetchpriority="high"
+        alt=""
+      />
+    </div>
+
+    <aside class="draft-note">
+      <strong>Borrador editorial:</strong> comprueba las fuentes, fechas y afirmaciones de
+      esta guía y obtén revisión humana antes de publicarla.
+    </aside>
+
+    <AdSlot />
+
+    <div class="article-layout">
+      <aside class="article-aside">
+        {toc.length > 1 && (
+          <nav class="toc" aria-label="En este artículo">
+            <p class="toc__title">En este artículo</p>
+            <ol>
+              {toc.map((heading) => (
+                <li data-depth={heading.depth}>
+                  <a href={`#${heading.slug}`}>{heading.text}</a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )}
+
+        <div class="author-mini">
+          <span class="avatar" aria-hidden="true">{AUTOR.name.slice(0, 1)}</span>
+          <div>
+            <p class="author-mini__name"><a href={`/autor/${AUTOR.slug}/`}>{AUTOR.name}</a></p>
+            <p class="author-mini__role">{AUTOR.role}</p>
+          </div>
+        </div>
+      </aside>
+
+      <div class="article-body">
+        <div class="prose">
+          <slot />
+        </div>
+
+        {entry.data.medical && (
+          <aside class="medical-note">
+            <strong>Esto no es consejo médico.</strong> Si el dolor es fuerte, persiste más de
+            una semana o aparecen síntomas nuevos, para y consulta a un fisioterapeuta o a tu
+            médico. La información de este artículo es general y no sustituye una valoración
+            individual.
+          </aside>
+        )}
+
+        {entry.data.sources.length > 0 && (
+          <section class="sources" aria-labelledby="fuentes-title">
+            <h2 id="fuentes-title">Fuentes consultadas</h2>
+            <ul>
+              {entry.data.sources.map((source) => (
+                <li>
+                  <a href={source.url} target="_blank" rel="noopener noreferrer">
+                    {source.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <div class="author-box">
+          <span class="avatar" aria-hidden="true">{AUTOR.name.slice(0, 1)}</span>
+          <div>
+            <h2>{AUTOR.name}</h2>
+            <p>{AUTOR.bio}</p>
+            <a href={`/autor/${AUTOR.slug}/`}>Ver todos los artículos del autor</a>
+          </div>
+        </div>
+
+        <AdSlot />
+      </div>
+    </div>
+  </div>
+
+  {related.length > 0 && (
+    <section class="wrap related" aria-labelledby="relacionados-title">
+      <h2 id="relacionados-title">Sigue leyendo</h2>
+      <div class="card-grid">
+        {related.map((item) => <ArticleCard entry={item} />)}
+      </div>
+    </section>
+  )}
+
+  <Newsletter />
+</BaseLayout>

@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ArchiveList from '../../../components/ArchiveList.astro';
+import { getCollection } from 'astro:content';
+import { sortByDate } from '../../../lib/utils';
+
+export async function getStaticPaths() {
+  const PAGE_SIZE = 9;
+  const articulos = sortByDate(await getCollection('articulos'));
+  const totalPages = Math.ceil(articulos.length / PAGE_SIZE);
+  const paths = [];
+
+  for (let page = 2; page <= totalPages; page += 1) {
+    paths.push({
+      params: { page: String(page) },
+      props: {
+        page,
+        totalPages,
+        articulos: articulos.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+      },
+    });
+  }
+
+  return paths;
+}
+
+const { page, totalPages, articulos } = Astro.props;
+---
+
+<BaseLayout
+  title={`Diario, página ${page}`}
+  description={`Página ${page} del diario de running de Ruta y Ritmo: entrenamiento, material, nutrición, salud y carreras.`}
+>
+  <ArchiveList articulos={articulos} currentPage={page} totalPages={totalPages} />
+</BaseLayout>

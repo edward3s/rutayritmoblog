@@ -1,0 +1,55 @@
+---
+import { CATEGORIA_LIST } from '../data/categorias';
+import { SITE } from '../data/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a class="wordmark" href="/" aria-label="Ruta y Ritmo, inicio">RUTA Y RITMO</a>
+        <p>{SITE.description}</p>
+      </div>
+
+      <div class="footer__col">
+        <h2>Secciones</h2>
+        <ul>
+          <li><a href="/diario/">Diario</a></li>
+          <li><a href="/rutas/">Rutas</a></li>
+          {CATEGORIA_LIST.map((categoria) => (
+            <li><a href={`/diario/categoria/${categoria.slug}/`}>{categoria.name}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h2>Ruta y Ritmo</h2>
+        <ul>
+          <li><a href="/sobre/">Sobre el diario</a></li>
+          <li><a href="/autor/equipo/">Autor</a></li>
+          <li><a href="/contacto/">Contacto</a></li>
+          <li><a href="/politica-editorial/">Política editorial</a></li>
+          <li><a href="/#boletin">Boletín</a></li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h2>Legal</h2>
+        <ul>
+          <li><a href="/privacidad/">Privacidad</a></li>
+          <li><a href="/cookies/">Cookies</a></li>
+          <li><a href="/aviso-legal/">Aviso legal</a></li>
+          <li><a href="/afiliados/">Afiliados</a></li>
+          <li><a href="/rss.xml">RSS</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <p>© {year} Ruta y Ritmo. Un diario de running desde Madrid.</p>
+      <p>Sin planes milagro. <a href="/rss.xml">Suscripción RSS</a></p>
+    </div>
+  </div>
+</footer>

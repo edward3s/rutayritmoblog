@@ -1,0 +1,83 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import ArticleCard from '../../../components/ArticleCard.astro';
+import AdSlot from '../../../components/AdSlot.astro';
+import { CATEGORIA_LIST } from '../../../data/categorias';
+import { SITE } from '../../../data/site';
+import { sortByDate } from '../../../lib/utils';
+
+export async function getStaticPaths() {
+  const articulos = sortByDate(await getCollection('articulos'));
+
+  return CATEGORIA_LIST.map((categoria) => ({
+    params: { categoria: categoria.slug },
+    props: {
+      categoria,
+      articulos: articulos.filter((entry) => entry.data.category === categoria.slug),
+    },
+  }));
+}
+
+const { categoria, articulos } = Astro.props as {
+  categoria: (typeof CATEGORIA_LIST)[number];
+  articulos: CollectionEntry<'articulos'>[];
+};
+
+const site = Astro.site ?? new URL(SITE.url);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: `${categoria.name} — Ruta y Ritmo`,
+  description: categoria.description,
+  inLanguage: 'es-ES',
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: articulos.map((entry, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: new URL(`/diario/${entry.id}/`, site).toString(),
+      name: entry.data.title,
+    })),
+  },
+};
+---
+
+<BaseLayout
+  title={`${categoria.name} | Ruta y Ritmo`}
+  description={categoria.description}
+  jsonLd={[jsonLd]}
+>
+  <section class="category-hero" style={`--cat:${categoria.tone}`}>
+    <div class="wrap">
+      <Breadcrumbs
+        items={[
+          { label: 'Inicio', href: '/' },
+          { label: 'Diario', href: '/diario/' },
+          { label: categoria.name },
+        ]}
+      />
+      <h1>{categoria.name}</h1>
+      <p>{categoria.description}</p>
+    </div>
+  </section>
+
+  <div class="wrap page">
+    <nav class="category-nav" aria-label="Categorías del diario">
+      {CATEGORIA_LIST.map((item) => (
+        <a
+          href={`/diario/categoria/${item.slug}/`}
+          aria-current={item.slug === categoria.slug ? 'page' : undefined}
+        >{item.name}</a>
+      ))}
+    </nav>
+
+    <div class="card-grid">
+      {articulos.map((entry) => <ArticleCard entry={entry} />)}
+    </div>
+
+    <AdSlot />
+  </div>
+</BaseLayout>

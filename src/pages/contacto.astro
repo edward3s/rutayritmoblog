@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { SITE } from '../data/site';
+---
+
+<BaseLayout
+  title="Contacto"
+  description="Escríbeme para correcciones, propuestas de rutas o dudas sobre el diario. Respondo en la medida de lo posible."
+>
+  <div class="wrap page">
+    <Breadcrumbs
+      items={[
+        { label: 'Inicio', href: '/' },
+        { label: 'Contacto' },
+      ]}
+    />
+
+    <header class="page__header">
+      <h1>Contacto</h1>
+      <p>
+        Correcciones, rutas que probar, dudas sobre un artículo o simplemente una salida
+        que merece la pena contar. Leo todo, aunque no siempre puedo responder el mismo día.
+      </p>
+    </header>
+
+    <div class="prose">
+      <p>
+        Correo directo: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. Si el mensaje
+        incluye un enlace o una ruta, mejor: ahorra una ida y vuelta.
+      </p>
+
+      <form
+        class="contact-form"
+        name="contacto"
+        method="POST"
+        action="/gracias/"
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+      >
+        <input type="hidden" name="form-name" value="contacto" />
+        <p hidden>
+          <label>No rellenar <input name="bot-field" /></label>
+        </p>
+
+        <label>
+          Tu nombre
+          <input type="text" name="nombre" autocomplete="name" required />
+        </label>
+
+        <label>
+          Tu correo
+          <input type="email" name="email" autocomplete="email" required />
+        </label>
+
+        <label>
+          Mensaje
+          <textarea name="mensaje" required></textarea>
+        </label>
+
+        <label class="checkbox">
+          <input type="checkbox" name="privacidad" value="aceptada" required />
+          <span>
+            He leído la <a href="/privacidad/">política de privacidad</a> y acepto que
+            se use mi correo para responderme.
+          </span>
+        </label>
+
+        <button type="submit">Enviar mensaje</button>
+      </form>
+
+      <p>
+        No envíes datos médicos sensibles por este formulario. Para una lesión, acude a
+        un profesional sanitario.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

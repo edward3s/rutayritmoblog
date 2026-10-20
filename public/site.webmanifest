@@ -1,0 +1,17 @@
+{
+  "name": "Ruta y Ritmo — Diario de running",
+  "short_name": "Ruta y Ritmo",
+  "description": "Rutas, entrenamiento, material y salud para corredores populares.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#E8EDF0",
+  "theme_color": "#E8EDF0",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

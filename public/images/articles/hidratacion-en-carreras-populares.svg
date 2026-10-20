@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Hidratación — Ruta y Ritmo</title>
+  <desc id="desc">Ilustración editorial vectorial sobre hidratación en el running.</desc>
+  <rect width="1200" height="675" fill="#E8EDF0"/>
+  <path d="M0 0h1200v105H0z" fill="#D7E0E5"/>
+  <path d="M0 105h1200" stroke="#0E1A20" stroke-opacity=".22" stroke-width="2"/>
+  <text x="88" y="69" fill="#0E1A20" font-family="Arial, sans-serif" font-size="30" font-weight="700" letter-spacing="3">RUTA Y RITMO</text>
+  <text x="1112" y="68" text-anchor="end" fill="#123F52" font-family="Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="2">NUTRICIÓN</text>
+  <path d="M0 565c160-20 248-45 376-27 142 20 213 57 360 46 159-12 276-53 464-34v125H0Z" fill="#D7E0E5"/>
+  <path d="M0 602c223-35 367 19 548 3 204-18 344-62 652-28" fill="none" stroke="#1C6275" stroke-opacity=".3" stroke-width="3"/>
+  <g><path d="M800 154h100v63l52 57v205c0 38-29 67-67 67h-70c-38 0-67-29-67-67V274l52-57Z" fill="#E8EDF0" stroke="#0E1A20" stroke-width="14" stroke-linejoin="round"/><path d="M766 359c61-26 121 28 184-4v124c0 38-29 67-67 67h-70c-38 0-67-29-67-67v-99Z" fill="#1C6275"/><path d="M766 359c61-26 121 28 184-4" fill="none" stroke="#F05A28" stroke-width="14"/><path d="M958 223c29 37 38 60 16 78-18 15-45 4-47-18-2-18 15-41 31-60Z" fill="#F05A28"/></g>
+  <path d="M88 620h104" stroke="#F05A28" stroke-width="10" stroke-linecap="square"/>
+  <text x="214" y="630" fill="#51656D" font-family="Arial, sans-serif" font-size="19" letter-spacing="1">HIDRATACIÓN</text>
+</svg>

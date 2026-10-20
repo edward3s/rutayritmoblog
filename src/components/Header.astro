@@ -1,0 +1,30 @@
+---
+import { SITE } from '../data/site';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path.startsWith(href);
+
+const links = [
+  { href: '/diario/', label: 'Diario' },
+  { href: '/rutas/', label: 'Rutas' },
+  { href: '/diario/categoria/entrenamiento/', label: 'Entrenamiento' },
+  { href: '/sobre/', label: 'Sobre' },
+  { href: '/buscar/', label: 'Buscar' },
+];
+---
+
+<header class="site-header wrap">
+  <a class="wordmark" href="/" aria-label="Ruta y Ritmo, inicio">RUTA Y RITMO</a>
+
+  <nav class="site-nav" aria-label="Principal">
+    {links.map((link) => (
+      <a
+        href={link.href}
+        aria-current={isActive(link.href) ? 'page' : undefined}
+      >{link.label}</a>
+    ))}
+  </nav>
+
+  <p class="issue">{SITE.issue}</p>
+</header>

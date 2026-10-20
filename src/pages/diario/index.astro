@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArchiveList from '../../components/ArchiveList.astro';
+import { getCollection } from 'astro:content';
+import { sortByDate } from '../../lib/utils';
+
+const PAGE_SIZE = 9;
+const articulos = sortByDate(await getCollection('articulos'));
+const totalPages = Math.ceil(articulos.length / PAGE_SIZE);
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Diario de Ruta y Ritmo',
+    description:
+      'Entrenamiento, material, nutrición, salud y carreras para corredores populares.',
+    inLanguage: 'es-ES',
+  },
+];
+---
+
+<BaseLayout
+  title="Diario de running"
+  description="Todos los artículos de Ruta y Ritmo: entrenamiento, material, nutrición, salud y carreras. Sin planes milagro y con las fuentes a la vista."
+  jsonLd={jsonLd}
+>
+  <ArchiveList
+    articulos={articulos.slice(0, PAGE_SIZE)}
+    currentPage={1}
+    totalPages={totalPages}
+  />
+</BaseLayout>

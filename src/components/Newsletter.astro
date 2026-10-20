@@ -1,0 +1,47 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Una salida, una lectura.',
+  description = 'Cada dos domingos: una ruta, un entrenamiento y algo de material. Sin planes de marca personal ni códigos de descuento.',
+} = Astro.props;
+---
+
+<section class="newsletter" id="boletin" aria-labelledby="boletin-title">
+  <div class="wrap newsletter__inner">
+    <div>
+      <h2 id="boletin-title">{title}</h2>
+      <p>{description}</p>
+    </div>
+
+    <form
+      name="boletin"
+      method="POST"
+      action="/gracias/"
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+    >
+      <input type="hidden" name="form-name" value="boletin" />
+      <p hidden>
+        <label>No rellenar <input name="bot-field" /></label>
+      </p>
+
+      <label for="email">Tu correo</label>
+      <div class="newsletter__row">
+        <input
+          id="email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          placeholder="tu@correo.com"
+          required
+        />
+        <button type="submit">Suscribirme</button>
+      </div>
+      <p class="newsletter__note">Puedes darte de baja cuando quieras.</p>
+    </form>
+  </div>
+</section>

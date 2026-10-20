@@ -1,0 +1,23 @@
+{
+  "trailingSlash": true,
+  "redirects": [
+    { "source": "/blog/:path*", "destination": "/diario/:path*", "permanent": true },
+    { "source": "/posts/:path*", "destination": "/diario/:path*", "permanent": true },
+    { "source": "/articulos/:path*", "destination": "/diario/:path*", "permanent": true },
+    { "source": "/entrenamiento/:path*", "destination": "/diario/:path*", "permanent": true },
+    { "source": "/rss", "destination": "/rss.xml", "permanent": true },
+    { "source": "/feed", "destination": "/rss.xml", "permanent": true },
+    { "source": "/index.html", "destination": "/", "permanent": true }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Permissions-Policy", "value": "geolocation=(), microphone=(), camera=()" }
+      ]
+    }
+  ]
+}

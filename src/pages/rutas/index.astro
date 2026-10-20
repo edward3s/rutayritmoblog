@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import RouteProfile from '../../components/RouteProfile.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import Newsletter from '../../components/Newsletter.astro';
+import { getCollection } from 'astro:content';
+import { SITE } from '../../data/site';
+import { sortByDate } from '../../lib/utils';
+
+const rutas = sortByDate(await getCollection('rutas'));
+const site = Astro.site ?? new URL(SITE.url);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Rutas de Madrid — Ruta y Ritmo',
+  description:
+    'Cuatro rutas de running por la sierra de Madrid y el Manzanares, con distancia, desnivel y avituallamiento.',
+  inLanguage: 'es-ES',
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: rutas.map((ruta, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: new URL(`/rutas/${ruta.id}/`, site).toString(),
+      name: ruta.data.title,
+    })),
+  },
+};
+---
+
+<BaseLayout
+  title="Rutas de Madrid"
+  description="Cuatro rutas para correr por la sierra de Madrid y el Manzanares: distancia, desnivel, terreno y puntos de agua."
+  jsonLd={[jsonLd]}
+>
+  <div class="wrap page">
+    <Breadcrumbs
+      items={[
+        { label: 'Inicio', href: '/' },
+        { label: 'Rutas' },
+      ]}
+    />
+
+    <header class="page__header">
+      <h1>Rutas de Madrid</h1>
+      <p>
+        Fichas preliminares por la sierra y Madrid Río. Los tracks, desniveles y puntos de
+        agua aún deben verificarse antes de usar o publicar estas rutas.
+      </p>
+    </header>
+
+    <div class="route-grid">
+      {rutas.map((ruta) => (
+        <article class="route-card">
+          <div class="route-card__art" aria-hidden="true">
+            <RouteProfile profile={ruta.data.profile} />
+          </div>
+          <p class="meta">
+            <span>{ruta.data.difficulty}</span>
+            <span>{ruta.data.duration}</span>
+          </p>
+          <h2><a href={`/rutas/${ruta.id}/`}>{ruta.data.title}</a></h2>
+          <p>{ruta.data.description}</p>
+          <div class="route-card__facts">
+            <span>{ruta.data.distanceKm} km</span>
+            <span>+{ruta.data.elevationGain} m</span>
+            <span>{ruta.data.terrain}</span>
+            <span>{ruta.data.start}</span>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <aside class="draft-note">
+      <strong>Importante:</strong> estas fichas son borradores editoriales, no rutas
+      verificadas en terreno. Confirma el recorrido, el acceso, el estado de los caminos
+      y el agua disponible con fuentes locales antes de salir.
+    </aside>
+
+    <AdSlot />
+  </div>
+
+  <Newsletter
+    title="Una ruta nueva cada dos domingos."
+    description="Si pruebas alguna de estas rutas, cuéntame cómo fue. El boletín también sirve para avisar de cambios de recorrido."
+  />
+</BaseLayout>

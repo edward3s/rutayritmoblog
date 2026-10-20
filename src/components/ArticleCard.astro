@@ -1,0 +1,43 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { CATEGORIAS } from '../data/categorias';
+import { formatDate, readingTime } from '../lib/utils';
+
+interface Props {
+  entry: CollectionEntry<'articulos'>;
+}
+
+const { entry } = Astro.props;
+const categoria = CATEGORIAS[entry.data.category];
+const url = `/diario/${entry.id}/`;
+---
+
+<article class="article-card">
+  <div class="article-card__art" aria-hidden="true">
+    <img
+      src={`/images/articles/${entry.id}.svg`}
+      width="1200"
+      height="675"
+      loading="lazy"
+      decoding="async"
+      alt=""
+    />
+  </div>
+
+  <a
+    class="category-tag"
+    href={`/diario/categoria/${categoria.slug}/`}
+    style={`--cat:${categoria.tone}`}
+  >{categoria.name}</a>
+
+  <h3 class="article-card__title">
+    <a href={url}>{entry.data.title}</a>
+  </h3>
+
+  <p class="article-card__excerpt">{entry.data.description}</p>
+
+  <div class="article-card__foot">
+    <time datetime={entry.data.publishedAt.toISOString()}>{formatDate(entry.data.publishedAt)}</time>
+    <span>{readingTime(entry.body)} min de lectura</span>
+  </div>
+</article>

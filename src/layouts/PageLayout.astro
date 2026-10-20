@@ -1,0 +1,33 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  crumb: string;
+  noindex?: boolean;
+}
+
+const { title, description, crumb, noindex = false } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} noindex={noindex}>
+  <div class="wrap page">
+    <Breadcrumbs
+      items={[
+        { label: 'Inicio', href: '/' },
+        { label: crumb },
+      ]}
+    />
+
+    <header class="page__header">
+      <h1>{title}</h1>
+      <p>{description}</p>
+    </header>
+
+    <div class="prose">
+      <slot />
+    </div>
+  </div>
+</BaseLayout>

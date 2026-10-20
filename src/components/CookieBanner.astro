@@ -1,0 +1,67 @@
+---
+const adsClient = import.meta.env.PUBLIC_ADSENSE_CLIENT;
+---
+
+<section class="cookie" id="cookie-banner" aria-label="Aviso de cookies" hidden>
+  <div class="cookie__inner">
+    <p>
+      Uso almacenamiento propio para recordar esta elección. Si aceptas, Google AdSense
+      puede usar cookies para mostrar anuncios. Puedes cambiar de opinión borrando los
+      datos del sitio. <a href="/cookies/">Leer la política de cookies</a>.
+    </p>
+    <div class="cookie__actions">
+      <button type="button" class="cookie__reject" id="cookie-reject">Solo necesarias</button>
+      <button type="button" class="cookie__accept" id="cookie-accept">Aceptar anuncios</button>
+    </div>
+  </div>
+</section>
+
+<script is:inline define:vars={{ adsClient }}>
+  (() => {
+    const KEY = 'rutayritmo-consent';
+    const banner = document.getElementById('cookie-banner');
+    const root = document.documentElement;
+
+    const loadAds = () => {
+      if (!adsClient || window.__rutayritmoAds) return;
+      window.__rutayritmoAds = true;
+      const script = document.createElement('script');
+      script.async = true;
+      script.src =
+        'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' +
+        encodeURIComponent(adsClient);
+      script.crossOrigin = 'anonymous';
+      document.head.appendChild(script);
+    };
+
+    const apply = (choice) => {
+      try {
+        localStorage.setItem(KEY, choice);
+      } catch (error) {
+        // Sin almacenamiento: la elección vale solo para esta página.
+      }
+      root.dataset.consent = choice;
+      banner.hidden = true;
+      if (choice === 'ads') loadAds();
+    };
+
+    let saved = null;
+    try {
+      saved = localStorage.getItem(KEY);
+    } catch (error) {
+      saved = null;
+    }
+
+    if (saved === 'ads') {
+      root.dataset.consent = 'ads';
+      loadAds();
+    } else if (saved) {
+      root.dataset.consent = 'essential';
+    } else {
+      banner.hidden = false;
+    }
+
+    document.getElementById('cookie-accept').addEventListener('click', () => apply('ads'));
+    document.getElementById('cookie-reject').addEventListener('click', () => apply('essential'));
+  })();
+</script>

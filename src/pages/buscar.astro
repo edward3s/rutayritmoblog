@@ -1,0 +1,148 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+---
+
+<BaseLayout
+  title="Buscar"
+  description="Busca entre los artículos y rutas de Ruta y Ritmo: entrenamiento, material, nutrición, salud y carreras."
+  noindex
+>
+  <div class="wrap search">
+    <Breadcrumbs
+      items={[
+        { label: 'Inicio', href: '/' },
+        { label: 'Buscar' },
+      ]}
+    />
+
+    <header class="page__header">
+      <h1>Buscar</h1>
+      <p>Escribe una distancia, una zapatilla o un problema. Hay 19 contenidos y ningún cajón desastre.</p>
+    </header>
+
+    <form class="search__form" role="search" id="search-form">
+      <label class="visually-hidden" for="q">Buscar en Ruta y Ritmo</label>
+      <input
+        id="q"
+        name="q"
+        type="search"
+        placeholder="umbral, fascitis, zapatillas…"
+        autocomplete="off"
+      />
+      <button type="submit">Buscar</button>
+    </form>
+
+    <p class="search__status" id="status" role="status" aria-live="polite">
+      Escribe para buscar en el diario.
+    </p>
+
+    <ul class="search__results" id="resultados"></ul>
+
+    <noscript>
+      <p class="search__status">
+        El buscador necesita JavaScript. Puedes recorrer el
+        <a href="/diario/">archivo completo</a> o las
+        <a href="/rutas/">fichas de ruta</a>.
+      </p>
+    </noscript>
+  </div>
+
+  <script is:inline>
+    (() => {
+      const form = document.getElementById('search-form');
+      const input = document.getElementById('q');
+      const status = document.getElementById('status');
+      const list = document.getElementById('resultados');
+
+      const normalize = (value) =>
+        value
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase();
+
+      let index = [];
+      let ready = false;
+
+      const render = () => {
+        const query = normalize(input.value.trim());
+        list.innerHTML = '';
+
+        if (!query) {
+          status.textContent = ready
+            ? 'Escribe para buscar entre los artículos y rutas.'
+            : 'Cargando el índice…';
+          return;
+        }
+
+        if (!ready) {
+          status.textContent = 'Cargando el índice…';
+          return;
+        }
+
+        const results = index
+          .filter((item) =>
+            normalize(`${item.title} ${item.description} ${item.category}`).includes(query),
+          )
+          .slice(0, 20);
+
+        status.textContent =
+          results.length === 0
+            ? `Sin resultados para “${input.value.trim()}”. Prueba con otra palabra.`
+            : `${results.length} ${results.length === 1 ? 'resultado' : 'resultados'} para “${input.value.trim()}”.`;
+
+        results.forEach((item) => {
+          const li = document.createElement('li');
+          li.className = 'search-result';
+
+          const link = document.createElement('a');
+          link.href = item.url;
+          link.textContent = item.title;
+
+          const description = document.createElement('p');
+          description.textContent = item.description;
+
+          const meta = document.createElement('p');
+          meta.className = 'meta';
+          meta.textContent = `${item.type} · ${item.category}`;
+
+          li.append(link, description, meta);
+          list.append(li);
+        });
+      };
+
+      const sync = () => {
+        const params = new URLSearchParams(window.location.search);
+        input.value = params.get('q') ?? '';
+        render();
+      };
+
+      fetch('/buscar.json')
+        .then((response) => {
+          if (!response.ok) throw new Error('No se pudo cargar el índice');
+          return response.json();
+        })
+        .then((data) => {
+          index = data;
+          ready = true;
+          render();
+        })
+        .catch(() => {
+          status.textContent = 'No se pudo cargar el buscador. Prueba a recargar la página.';
+        });
+
+      input.addEventListener('input', render);
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const query = input.value.trim();
+        const url = query ? `/buscar/?q=${encodeURIComponent(query)}` : '/buscar/';
+        window.history.replaceState({}, '', url);
+        render();
+        input.focus();
+      });
+
+      sync();
+    })();
+  </script>
+</BaseLayout>

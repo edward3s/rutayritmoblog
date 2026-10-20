@@ -1,0 +1,48 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ArticleCard from './ArticleCard.astro';
+import AdSlot from './AdSlot.astro';
+import Pagination from './Pagination.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+import { CATEGORIA_LIST } from '../data/categorias';
+
+interface Props {
+  articulos: CollectionEntry<'articulos'>[];
+  currentPage: number;
+  totalPages: number;
+}
+
+const { articulos, currentPage, totalPages } = Astro.props;
+const pageLabel = currentPage === 1 ? 'Diario' : `Diario, página ${currentPage}`;
+---
+
+<div class="wrap page">
+  <Breadcrumbs
+    items={[
+      { label: 'Inicio', href: '/' },
+      { label: pageLabel },
+    ]}
+  />
+
+  <header class="page__header">
+    <h1>Diario</h1>
+    <p>
+      Entrenamiento, material, nutrición, salud y carreras. Sin atajos, sin planes
+      milagro y con las fuentes a la vista.
+    </p>
+  </header>
+
+  <nav class="category-nav" aria-label="Categorías del diario">
+    {CATEGORIA_LIST.map((categoria) => (
+      <a href={`/diario/categoria/${categoria.slug}/`}>{categoria.name}</a>
+    ))}
+  </nav>
+
+  <div class="card-grid">
+    {articulos.map((entry) => <ArticleCard entry={entry} />)}
+  </div>
+
+  <AdSlot />
+
+  <Pagination currentPage={currentPage} totalPages={totalPages} />
+</div>
